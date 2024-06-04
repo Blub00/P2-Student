@@ -29,7 +29,10 @@ public class RBTreeChecker {
      * @throws RBTreeException if the tree does not satisfy the rule.
      */
     public static void checkRule1(RBTree<?> rbTree) {
-        crash(); //TODO: H1 a) - remove if implemented
+        //TODO: H1 a)
+        RBNode<?> x = rbTree.getRoot();
+
+        
     }
 
     /**
@@ -41,7 +44,10 @@ public class RBTreeChecker {
      * @throws RBTreeException if the tree does not satisfy the rule.
      */
     public static void checkRule2(RBTree<?> rbTree) {
-        crash(); //TODO: H1 b) - remove if implemented
+        //TODO: H1 b)
+        if (!rbTree.getRoot().isBlack()){
+            throw new RBTreeException("The root of the RBTree must be black");
+        }
     }
 
     /**
