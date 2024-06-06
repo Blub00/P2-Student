@@ -1,11 +1,13 @@
 package p2.binarytree;
 
+
 import static org.tudalgo.algoutils.student.Student.crash;
 
 /**
  * A class for checking the rules of a red-black tree.
  */
 public class RBTreeChecker {
+
 
     /**
      * Checks if the given tree satisfies all the rules of a red-black tree.
@@ -20,6 +22,18 @@ public class RBTreeChecker {
         checkRule4(rbTree);
     }
 
+
+
+    private static void destructure(RBNode<?> rbNode) {
+        if (rbNode != null) {
+            if (rbNode.getColor() == null) {
+                throw new RBTreeException("The node of the Tree must be Red or Black");
+            }
+            destructure(rbNode.getLeft());
+            destructure(rbNode.getRight());
+        }
+    }
+
     /**
      * Checks if the given tree satisfies the first rule of black tree.
      * <p>
@@ -30,9 +44,9 @@ public class RBTreeChecker {
      */
     public static void checkRule1(RBTree<?> rbTree) {
         //TODO: H1 a)
-        RBNode<?> x = rbTree.getRoot();
-
-        
+        if (rbTree.getRoot() != null ){
+            destructure(rbTree.getRoot());
+        }
     }
 
     /**
@@ -45,9 +59,12 @@ public class RBTreeChecker {
      */
     public static void checkRule2(RBTree<?> rbTree) {
         //TODO: H1 b)
-        if (!rbTree.getRoot().isBlack()){
-            throw new RBTreeException("The root of the RBTree must be black");
+        if (rbTree == null || rbTree.getRoot() == null){
+            return;
         }
+            if(!rbTree.getRoot().isBlack()){
+                throw new RBTreeException("The root of the RBTree must be black");
+            }
     }
 
     /**
@@ -59,7 +76,7 @@ public class RBTreeChecker {
      * @throws RBTreeException if the tree does not satisfy the rule.
      */
     public static void checkRule3(RBTree<?> rbTree) {
-        crash(); //TODO: H1 c) - remove if implemented
+        //TODO: H1 c)
     }
 
     /**
