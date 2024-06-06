@@ -1,8 +1,6 @@
 package p2.binarytree;
 
 
-import static org.tudalgo.algoutils.student.Student.crash;
-
 /**
  * A class for checking the rules of a red-black tree.
  */
@@ -22,18 +20,6 @@ public class RBTreeChecker {
         checkRule4(rbTree);
     }
 
-
-
-    private static void destructure(RBNode<?> rbNode) {
-        if (rbNode != null) {
-            if (rbNode.getColor() == null) {
-                throw new RBTreeException("The node of the Tree must be Red or Black");
-            }
-            destructure(rbNode.getLeft());
-            destructure(rbNode.getRight());
-        }
-    }
-
     /**
      * Checks if the given tree satisfies the first rule of black tree.
      * <p>
@@ -45,7 +31,17 @@ public class RBTreeChecker {
     public static void checkRule1(RBTree<?> rbTree) {
         //TODO: H1 a)
         if (rbTree.getRoot() != null ){
-            destructure(rbTree.getRoot());
+            isBlackOrRed(rbTree.getRoot());
+        }
+    }
+
+    private static void isBlackOrRed(RBNode<?> rbNode) {
+        if (rbNode != null) {
+            if (rbNode.getColor() == null) {
+                throw new RBTreeException("The node of the Tree must be Red or Black");
+            }
+            isBlackOrRed(rbNode.getLeft());
+            isBlackOrRed(rbNode.getRight());
         }
     }
 
@@ -77,6 +73,19 @@ public class RBTreeChecker {
      */
     public static void checkRule3(RBTree<?> rbTree) {
         //TODO: H1 c)
+        if(rbTree.getRoot() != null){
+            hasRedNodeRedParent(rbTree.getRoot());
+        }
+    }
+
+    private static void hasRedNodeRedParent(RBNode<?> rbNode){
+        if(rbNode != null){
+            if(rbNode.isRed() && rbNode.getParent().isRed()){
+                throw new RBTreeException("Node and parent node can not be red");
+            }
+            hasRedNodeRedParent(rbNode.getLeft());
+            hasRedNodeRedParent(rbNode.getRight());
+        }
     }
 
     /**
@@ -88,7 +97,46 @@ public class RBTreeChecker {
      * @throws RBTreeException if the tree does not satisfy the rule.
      */
     public static void checkRule4(RBTree<?> rbTree) {
-        crash(); //TODO: H1 a) - remove if implemented
+        //TODO: H1 d)
+        if(rbTree.getRoot() != null){
+            if(bNodes(rbTree.getRoot())){
+                return;
+            }
+            throw new RBTreeException("The number of black leafs is not the same on every way");
+        }
+    }
+
+    private static boolean bNodes(RBNode<?> rbNode){
+        int counterL =0;
+        int counterR = 0;
+        int blackL = 0;
+        int blackR = 0;
+        RBNode<?> tmp = rbNode;
+        while (rbNode != null){
+
+            if (counterL >= 1){
+                if(rbNode.isBlack()){
+                    blackL++;
+                }
+            }
+            counterL++;
+            rbNode = rbNode.getLeft();
+        }
+        blackL++;
+
+        rbNode = tmp;
+        while (rbNode != null){
+
+            if (counterR >= 1){
+                if(rbNode.isBlack()){
+                    blackL++;
+                }
+            }
+            counterR++;
+            rbNode = rbNode.getRight();
+        }
+        blackR++;
+        return blackL == blackR;
     }
 
 }
