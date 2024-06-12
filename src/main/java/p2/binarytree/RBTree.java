@@ -38,7 +38,10 @@ public class RBTree<T extends Comparable<T>> extends AbstractBinarySearchTree<T,
 
     @Override
     public void insert(T value) {
-        crash(); //TODO: H2 c) - remove if implemented
+        //TODO: H2 c)
+        RBNode<T> node = createNode(value);
+        insert(node, sentinel);
+        fixColorsAfterInsertion(node);
     }
 
     /**
@@ -48,7 +51,44 @@ public class RBTree<T extends Comparable<T>> extends AbstractBinarySearchTree<T,
      * @param z The node that was inserted.
      */
     protected void fixColorsAfterInsertion(RBNode<T> z) {
-        crash(); //TODO: H2 b) - remove if implemented
+        //TODO: H2 b)
+        RBNode<T> y;
+        while (z.getParent().isRed()) {
+            if (z.getParent().equals(z.getParent().getParent().getLeft())) {
+                y = z.getParent().getParent().getRight();
+                if (y != null && y.isRed()) {
+                    z.getParent().setColor(Color.BLACK);
+                    y.setColor(Color.BLACK);
+                    z.getParent().getParent().setColor(Color.RED);
+                    z = z.getParent().getParent();
+                } else {
+                    if (z.equals(z.getParent().getRight())) {
+                        z = z.getParent();
+                        rotateLeft(z);
+                    }
+                    z.getParent().setColor(Color.BLACK);
+                    z.getParent().getParent().setColor(Color.RED);
+                    rotateRight(z.getParent().getParent());
+                }
+            } else {
+                y = z.getParent().getParent().getLeft();
+                if (y != null && y.isRed()) {
+                    z.getParent().setColor(Color.BLACK);
+                    y.setColor(Color.BLACK);
+                    z.getParent().getParent().setColor(Color.RED);
+                    z = z.getParent().getParent();
+                } else {
+                    if (z.equals(z.getParent().getLeft())) {
+                        z = z.getParent();
+                        rotateRight(z);
+                    }
+                    z.getParent().setColor(Color.BLACK);
+                    z.getParent().getParent().setColor(Color.RED);
+                    rotateLeft(z.getParent().getParent());
+                }
+            }
+        }
+        root.setColor(Color.BLACK);
     }
 
     /**
@@ -59,7 +99,24 @@ public class RBTree<T extends Comparable<T>> extends AbstractBinarySearchTree<T,
      * @param x The node to rotate.
      */
     protected void rotateLeft(RBNode<T> x) {
-        crash(); //TODO: H2 b) - remove if implemented
+        //TODO: H2 b)
+        RBNode<T> y = x.getRight();
+        x.setRight(y.getLeft());
+        if (y.hasLeft()) {
+            y.getLeft().setParent(x);
+        }
+        y.setParent(x.getParent());
+        if (x.getParent().equals(sentinel)) {
+            root = y;
+        } else {
+            if (x.equals(x.getParent().getLeft())) {
+                x.getParent().setLeft(y);
+            } else {
+                x.getParent().setRight(y);
+            }
+        }
+        y.setLeft(x);
+        x.setParent(y);
     }
 
     /**
@@ -70,7 +127,24 @@ public class RBTree<T extends Comparable<T>> extends AbstractBinarySearchTree<T,
      * @param x The node to rotate.
      */
     protected void rotateRight(RBNode<T> x) {
-        crash(); //TODO: H2 b) - remove if implemented
+        //TODO: H2 b)
+        RBNode<T> y = x.getLeft();
+        x.setLeft(y.getRight());
+        if (y.hasRight()) {
+            y.getRight().setParent(x);
+        }
+        y.setParent(x.getParent());
+        if (x.getParent().equals(sentinel)) {
+            root = y;
+        } else {
+            if (x.equals(x.getParent().getRight())) {
+                x.getParent().setRight(y);
+            } else {
+                x.getParent().setLeft(y);
+            }
+        }
+        y.setRight(x);
+        x.setParent(y);
     }
 
     @Override

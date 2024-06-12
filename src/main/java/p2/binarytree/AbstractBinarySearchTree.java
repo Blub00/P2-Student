@@ -2,6 +2,7 @@ package p2.binarytree;
 
 import p2.SearchTree;
 
+import javax.swing.tree.TreeNode;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -52,7 +53,24 @@ public abstract class AbstractBinarySearchTree<T extends Comparable<T>, N extend
      *                  should be {@code null}.
      */
     protected void insert(N node, N initialPX) {
-        crash(); //TODO: H2 a) - remove if implemented
+        //TODO: H2 a)
+        N x = this.getRoot();
+        while (x != null) {
+            initialPX = x;
+            if (x.getKey().compareTo(node.getKey()) > 0) {
+                x = x.getLeft();
+            } else {
+                x = x.getRight();
+            }
+        }
+        node.setParent(initialPX);
+        if (initialPX.getKey() == null) {
+            root = node;
+        } else if (initialPX.getKey().compareTo(node.getKey()) > 0) {
+            initialPX.setLeft(node);
+        } else {
+            initialPX.setRight(node);
+        }
     }
 
     /**
@@ -69,10 +87,25 @@ public abstract class AbstractBinarySearchTree<T extends Comparable<T>, N extend
      * @param result The list to store the elements in.
      * @param max    The maximum number of elements to include in the result.
      * @param limit  The predicate to test the elements against. If the predicate returns {@code false} for an element,
-     *               the traversal stops.
+     * the traversal stops.
      */
+
+    int counter = 0;
+
+
     protected void inOrder(N node, List<? super T> result, int max, Predicate<? super T> limit) {
-        crash(); //TODO: H3 a) - remove if implemented
+        //TODO: H3 a)
+        if (counter <= max) {
+            if (node != null) {
+                if (limit.test(node.getKey())) {
+                    inOrder(node.getLeft(), result, max, limit);
+                    counter++;
+                    result.add(node.getKey());
+                    inOrder(node.getRight(), result, max, limit);
+                }
+            }
+        }
+        counter = 0;
     }
 
     /**
@@ -89,10 +122,42 @@ public abstract class AbstractBinarySearchTree<T extends Comparable<T>, N extend
      * @param result The list to store the elements in.
      * @param max    The maximum number of elements to include in the result.
      * @param limit  The predicate to test the elements against. If the predicate returns {@code false} for an element,
-     *               the traversal stops.
+     * the traversal stops.
      */
+
+    N tmp;
+
     protected void findNext(N node, List<? super T> result, int max, Predicate<? super T> limit) {
-        crash(); //TODO: H13 b) - remove if implemented
+        //TODO: H13 b)
+        if (counter <= max && max >0) {
+            if (node != null) {
+                if (limit.test(node.getKey())) {
+                    if (counter == 0 ) {
+                        tmp = node;
+                        counter++;
+                        result.add(node.getKey());
+                        findNext(node.getRight(), result, max, limit);
+                    } else {
+                        findNext(node.getLeft(), result, max, limit);
+                        counter++;
+                        result.add(node.getKey());
+                        findNext(node.getRight(), result, max, limit);
+                    }
+
+                }
+            } else if(tmp.getParent() != null && tmp.getParent().getLeft() != null && tmp.getParent().getRight() != null) {
+                if (tmp.getParent().getLeft() == tmp) {
+                    result.add(tmp.getParent().getKey());
+                    if (tmp.getParent().getRight() != null) {
+                        tmp = tmp.getParent().getRight();
+                        findNext(tmp.getLeft(), result, max, limit);
+                        counter++;
+                        result.add(tmp.getKey());
+                        findNext(tmp.getRight(), result, max, limit);
+                    }
+                }
+            }
+        }
     }
 
     @Override
