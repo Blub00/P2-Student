@@ -99,14 +99,39 @@ public class RBTreeChecker {
     public static void checkRule4(RBTree<?> rbTree) {
         //TODO: H1 d)
         if(rbTree.getRoot() != null){
-            if(bNodes(rbTree.getRoot())){
-                return;
-            }
-            throw new RBTreeException("The number of black leafs is not the same on every way");
+
+            bNode(rbTree.getRoot());
         }
     }
 
+
+    private static int bNode(RBNode<?> rbNode){
+        int blN = 0;
+        int brN = 0;
+        if (rbNode == null){
+            return 0;
+        }
+        if (!rbNode.hasLeft() && !rbNode.hasRight()){
+            
+        }
+
+        if (rbNode.hasLeft()){
+            blN++;
+             return blN + bNode(rbNode.getLeft());
+        } else {
+            if (rbNode.hasRight() && rbNode.getRight().isBlack()){
+                throw new RBTreeException("The number of black leafs is not the same on every way");
+            } else {
+                brN++;
+                return brN + bNode(rbNode.getRight());
+            }
+        }
+    }
+
+
+/*
     private static boolean bNodes(RBNode<?> rbNode){
+
         int counterL =0;
         int counterR = 0;
         int blackL = 0;
@@ -139,4 +164,5 @@ public class RBTreeChecker {
         return blackL == blackR;
     }
 
+ */
 }
