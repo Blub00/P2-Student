@@ -100,23 +100,26 @@ public class RBTree<T extends Comparable<T>> extends AbstractBinarySearchTree<T,
      */
     protected void rotateLeft(RBNode<T> x) {
         //TODO: H2 b)
-        RBNode<T> y = x.getRight();
-        x.setRight(y.getLeft());
-        if (y.hasLeft()) {
-            y.getLeft().setParent(x);
-        }
-        y.setParent(x.getParent());
-        if (x.getParent().equals(sentinel)) {
-            root = y;
-        } else {
-            if (x.equals(x.getParent().getLeft())) {
-                x.getParent().setLeft(y);
-            } else {
-                x.getParent().setRight(y);
+        RBNode<T> y;
+        if (x.getRight() != null) {
+            y = x.getRight();
+            x.setRight(y.getLeft());
+            if (y.getLeft() != null) {
+                y.getLeft().setParent(x);
             }
+            y.setParent(x.getParent());
+            if (x.getParent() == sentinel) {
+                root = y;
+            } else {
+                if (x == x.getParent().getLeft()) {
+                    x.getParent().setLeft(y);
+                } else {
+                    x.getParent().setRight(y);
+                }
+            }
+            y.setLeft(x);
+            x.setParent(y);
         }
-        y.setLeft(x);
-        x.setParent(y);
     }
 
     /**
@@ -128,23 +131,25 @@ public class RBTree<T extends Comparable<T>> extends AbstractBinarySearchTree<T,
      */
     protected void rotateRight(RBNode<T> x) {
         //TODO: H2 b)
-        RBNode<T> y = x.getLeft();
-        x.setLeft(y.getRight());
-        if (y.hasRight()) {
-            y.getRight().setParent(x);
-        }
-        y.setParent(x.getParent());
-        if (x.getParent().equals(sentinel)) {
-            root = y;
-        } else {
-            if (x.equals(x.getParent().getRight())) {
-                x.getParent().setRight(y);
-            } else {
-                x.getParent().setLeft(y);
+        if (x.getLeft() != null) {
+            RBNode<T> y = x.getLeft();
+            x.setLeft(y.getRight());
+            if (y.hasRight()) {
+                y.getRight().setParent(x);
             }
+            y.setParent(x.getParent());
+            if (x.getParent().equals(sentinel)) {
+                root = y;
+            } else {
+                if (x.equals(x.getParent().getRight())) {
+                    x.getParent().setRight(y);
+                } else {
+                    x.getParent().setLeft(y);
+                }
+            }
+            y.setRight(x);
+            x.setParent(y);
         }
-        y.setRight(x);
-        x.setParent(y);
     }
 
     @Override
@@ -186,7 +191,54 @@ public class RBTree<T extends Comparable<T>> extends AbstractBinarySearchTree<T,
      * @param joinKey The key to insert into the tree to join the two trees.
      */
     public void join(RBTree<T> other, T joinKey) {
-        crash(); //TODO: H4 c) - remove if implemented
+        //TODO: H4 c)
+
+        RBNode<T> joinedKey = createNode(joinKey);
+        RBNode<T> nodeThis;
+        RBNode<T> nodeOther;
+
+        if (this.blackHeight() == other.blackHeight()) {
+
+            nodeThis = this.findBlackNodeWithBlackHeight(other.blackHeight(), this.blackHeight(), false);
+            nodeOther = other.getRoot();
+
+            joinedKey.setLeft(nodeThis);
+            nodeThis.setParent(joinedKey);
+            joinedKey.setRight(nodeOther);
+            nodeOther.setParent(joinedKey);
+            root = joinedKey;
+            other.root = joinedKey;
+            joinedKey.setParent(sentinel);
+
+
+        } else if (this.blackHeight() < other.blackHeight()) {
+
+            nodeOther = other.findBlackNodeWithBlackHeight(this.blackHeight(), other.blackHeight(), true);
+            nodeThis = this.getRoot();
+
+            joinedKey.setLeft(nodeThis);
+            nodeThis.setParent(joinedKey);
+            joinedKey.setRight(nodeOther);
+            nodeOther.setParent(joinedKey);
+            root = joinedKey;
+            other.root = joinedKey;
+            joinedKey.setParent(sentinel);
+
+        } else {
+
+            nodeThis = this.findBlackNodeWithBlackHeight(other.blackHeight(), this.blackHeight(), false);
+            nodeOther = other.getRoot();
+
+            joinedKey.setLeft(nodeThis);
+            nodeThis.setParent(joinedKey);
+            joinedKey.setRight(nodeOther);
+            nodeOther.setParent(joinedKey);
+            root = joinedKey;
+            other.root = joinedKey;
+            joinedKey.setParent(sentinel);
+        }
+
+        fixColorsAfterInsertion(joinedKey);
     }
 
     /**
@@ -194,8 +246,25 @@ public class RBTree<T extends Comparable<T>> extends AbstractBinarySearchTree<T,
      *
      * @return the black height of the tree.
      */
+    private int blackNodes = 1;
+
     public int blackHeight() {
-        return crash(); //TODO: H4 a) - remove if implemented
+        //TODO: H4 a)
+        if(getRoot().getLeft() != null) {
+            blackCounter(getRoot().getLeft());
+        }else{
+            blackCounter(getRoot().getRight());
+        }
+        return blackNodes;
+    }
+
+    private void blackCounter(RBNode<?> node) {
+        if (node != null) {
+            if (node.isBlack()) {
+                blackNodes++;
+            }
+            blackCounter(node.getLeft());
+        }
     }
 
     /**
@@ -211,8 +280,33 @@ public class RBTree<T extends Comparable<T>> extends AbstractBinarySearchTree<T,
      * @param findSmallest      Whether to find the smallest or largest node with the target black height.
      * @return A black node with the target black height.
      */
+
     public RBNode<T> findBlackNodeWithBlackHeight(int targetBlackHeight, int totalBlackHeight, boolean findSmallest) {
-        return crash(); //TODO: H4 b) - remove if implemented
+        //TODO: H4 b)
+        RBNode<T> node = getRoot();
+        if (targetBlackHeight == totalBlackHeight) {
+            return node;
+        }
+        for (int i = targetBlackHeight; i < totalBlackHeight; i++) {
+            if (findSmallest) {
+                if (node.getLeft() == null) {
+                    return node;
+                }
+                node = node.getLeft();
+                if (node.isRed()) {
+                    node = node.getLeft();
+                }
+            } else {
+                if (node.getRight() == null) {
+                    return node;
+                }
+                node = node.getRight();
+                if (node.isRed()) {
+                    node = node.getRight();
+                }
+            }
+        }
+        return node;
     }
 
     @Override

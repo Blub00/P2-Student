@@ -117,8 +117,29 @@ public class AutoComplete {
      * @param prefix the prefix to search for.
      * @return the smallest node in the tree that starts with the given prefix.
      */
+
+    private final BinaryNode<String>[] result = new BinaryNode[getSearchTree().inOrder().toArray().length];
+    private int j = 0;
+
     public BinaryNode<String> prefixSearch(String prefix) {
-        return crash(); //TODO: H3 c) - remove if implemented
+        //TODO: H3 c)
+        nodes(getSearchTree().getRoot());
+        if (result.length != 0) {
+            for (int i = 0; i <= result.length; i++) {
+                if (result[i].getKey().startsWith(prefix)) {
+                    return result[i];
+                }
+            }
+        }
+        return null;
+    }
+    private void nodes(BinaryNode<String> node){
+        if(node!= null){
+            nodes(node.getLeft());
+            result[j]=node;
+            j++;
+            nodes(node.getRight());
+        }
     }
 
     /**
