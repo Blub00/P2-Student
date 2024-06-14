@@ -252,9 +252,8 @@ public class RBTree<T extends Comparable<T>> extends AbstractBinarySearchTree<T,
         //TODO: H4 a)
         if(getRoot().getLeft() != null) {
             blackCounter(getRoot().getLeft());
-        }else{
-            blackCounter(getRoot().getRight());
         }
+
         return blackNodes;
     }
 

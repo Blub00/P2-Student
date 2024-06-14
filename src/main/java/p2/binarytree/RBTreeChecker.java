@@ -106,28 +106,23 @@ public class RBTreeChecker {
 
 
     private static int bNode(RBNode<?> rbNode){
-        int blN = 0;
-        int brN = 0;
-        if (rbNode == null){
-            return 0;
-        }
-        if (!rbNode.hasLeft() && !rbNode.hasRight()){
-            
-        }
+        if (rbNode!= null ){
+            int lHeight = bNode(rbNode.getLeft());
+            int rHeight = bNode(rbNode.getRight());
 
-        if (rbNode.hasLeft()){
-            blN++;
-             return blN + bNode(rbNode.getLeft());
-        } else {
-            if (rbNode.hasRight() && rbNode.getRight().isBlack()){
-                throw new RBTreeException("The number of black leafs is not the same on every way");
-            } else {
-                brN++;
-                return brN + bNode(rbNode.getRight());
+            if (lHeight > 0 && rHeight > 0 && lHeight != rHeight){
+                throw new RBTreeException("The counted black nodes on every path are not the same amount");
             }
+            if (lHeight > 0 && rHeight > 0){
+                return rbNode.isBlack() ? lHeight + 1 : lHeight;
+            }else{
+                return 0;
+            }
+        } else {
+            return 1;
         }
-    }
 
+    }
 
 /*
     private static boolean bNodes(RBNode<?> rbNode){
